@@ -4,44 +4,25 @@ using UnityEngine;
 
 public class MouseCamLook : MonoBehaviour
 {
-    public GameObject playerHead;
-
-    public float sensitivityX = 15F;
-    public float sensitivityY = 15F;
-    
-    const float minimumX = -360F;
-    const float maximumX = 360F;
-    const float minimumY = -60F;
-    const float maximumY = 60F;
-    
-    float rotationX = 0F;
-    float rotationY = 0F;
-    
-    Quaternion originalBodyRotation;
-    Quaternion originalHeadRotation;
+    public float mouseSensitivity = 100f;
+    public Transform playerBody;
+    float xRotation = 0f;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        originalBodyRotation = transform.localRotation;
-        originalHeadRotation = playerHead.transform.localRotation;
     }
 
     void Update()
     {
-        // Body
-         rotationX += Input.GetAxis("Mouse X") * sensitivityX;
-         Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-         transform.localRotation = originalBodyRotation * xQuaternion;
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
+        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
-        // Head
-         rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
-         rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
-
-         Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
-
-         playerHead.transform.localRotation = originalHeadRotation * yQuaternion;
+        playerBody.Rotate(Vector3.up * mouseX);
     }
 }
